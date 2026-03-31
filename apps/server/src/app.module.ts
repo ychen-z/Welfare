@@ -9,6 +9,7 @@ import redisConfig from "./config/redis.config";
 
 import { RedisModule } from "./common/redis/redis.module";
 import { AuthModule } from "./modules/auth/auth.module";
+import { EmployeeModule } from "./modules/employee/employee.module";
 import { JwtAuthGuard } from "./common/guards/jwt.guard";
 import { PermissionGuard } from "./common/guards/permission.guard";
 import { AppController } from "./app.controller";
@@ -46,6 +47,9 @@ import { AppController } from "./app.controller";
 
     // 认证模块
     AuthModule,
+
+    // 员工管理模块
+    EmployeeModule,
   ],
   controllers: [AppController],
   providers: [
