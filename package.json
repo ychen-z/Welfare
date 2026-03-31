@@ -1,0 +1,25 @@
+{
+    "name": "welfal",
+    "version": "0.0.1",
+    "private": true,
+    "description": "企业内部员工福利兑换平台",
+    "scripts": {
+        "dev:server": "pnpm --filter @welfal/server run start:dev",
+        "dev:admin": "pnpm --filter @welfal/admin run dev",
+        "build:server": "pnpm --filter @welfal/server run build",
+        "build:admin": "pnpm --filter @welfal/admin run build",
+        "build": "pnpm run build:server && pnpm run build:admin",
+        "lint": "pnpm -r run lint"
+    },
+    "keywords": [
+        "welfare",
+        "employee",
+        "enterprise"
+    ],
+    "author": "",
+    "license": "PRIVATE",
+    "engines": {
+        "node": ">=18.0.0",
+        "pnpm": ">=8.0.0"
+    }
+}

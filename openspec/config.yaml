@@ -1,0 +1,93 @@
+schema: spec-driven
+
+# ============================================================
+# 项目上下文 - AI 每次对话都会读取
+# ============================================================
+context: |
+  ## 项目：企业内部员工福利兑换平台 (Welfal)
+
+  ### 技术栈
+  - 后端：NestJS 10 + TypeScript 5 + TypeORM 0.3 + MySQL 8 + Redis 7
+  - 前端（管理后台）：React 18 + umi 4 + Ant Design 5 + TailwindCSS
+  - 前端（移动端）：待定，先完成后台
+  - 包管理：pnpm (Monorepo)
+  - 部署：Docker + Nginx
+
+  ### 项目结构
+  ```
+  apps/
+    server/          # NestJS 后端
+    admin/           # 管理后台前端
+  packages/
+    shared/          # 共享类型/常量
+  ```
+
+  ### 核心业务约束
+  - 用户规模：5000 员工
+  - 峰值并发：500 人同时兑换
+  - 积分不扣错、库存不超卖
+  - 操作日志全记录
+
+  ### 详细文档位置
+  - PRD：prd.md
+  - 开发规范：doc/开发规范.md
+  - 数据库设计：doc/database.sql
+  - 探索记录：doc/step.md
+
+# ============================================================
+# 规则 - 核心约束（必须遵守）
+# ============================================================
+rules:
+  # 代码规范
+  code:
+    - 禁止在 Controller 写业务逻辑，只做参数校验和调用 Service
+    - 禁止在 Service 写原生 SQL，用 TypeORM QueryBuilder 或 Repository
+    - 禁止循环查库（N+1 问题）
+    - 所有查询必须走 Repository 层
+    - 密码必须用 bcrypt 加密存储
+    - 敏感接口必须做幂等/防重
+
+  # 命名规范
+  naming:
+    - 后端文件：kebab-case（如 user.controller.ts, create-user.dto.ts）
+    - 前端组件：PascalCase（如 UserList.tsx）
+    - 数据库表：小写+下划线+模块前缀（如 sys_user, prd_product, ord_order）
+    - 数据库字段：小写+下划线（如 user_name, create_time）
+    - API 路径：小写+短横线（如 /api/point-logs）
+
+  # API 规范
+  api:
+    - RESTful 风格，资源用名词复数
+    - 统一响应格式：{ code, message, data }
+    - code=0 表示成功，其他为错误码
+    - 错误码分段：10000通用/20000用户/30000商品/40000订单/50000积分
+
+  # 数据库规范
+  database:
+    - 必备字段：id, create_time, update_time, is_deleted
+    - 主键用 BIGINT 自增
+    - 软删除用 is_deleted 字段
+    - 索引命名：pk_主键, uk_唯一, idx_普通
+
+  # 并发安全
+  concurrency:
+    - 积分扣减使用悲观锁 SELECT FOR UPDATE
+    - 兑换流程使用本地事务，锁顺序：先积分后库存
+    - 防重提交：同用户同商品 5 秒内拒绝
+
+  # Git 规范
+  git:
+    - 分支：main/develop/feature/fix/hotfix
+    - Commit 格式：<type>(<scope>): <subject>
+    - type：feat/fix/docs/style/refactor/perf/test/chore
+
+  # Proposal 规范
+  proposal:
+    - 必须包含：目标、范围、非目标
+    - 明确受影响的模块和接口
+
+  # Tasks 规范
+  tasks:
+    - 单个任务不超过 2 小时工作量
+    - 任务粒度到具体文件/函数级别
+    - 包含验收标准
